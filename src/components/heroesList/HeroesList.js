@@ -1,6 +1,6 @@
 import { useHttp } from '../../hooks/http.hook';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import {
     heroesFetching,
@@ -10,13 +10,14 @@ import {
 } from '../../actions';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
+import { useCallback } from 'react';
 
 const HeroesList = () => {
-    const {heroes, heroesLoadingStatus } = useSelector(state => state);
-    const status = useSelector(state => state.filters.status)
+    const {entities, heroesLoadingStatus } = useSelector(state => state.heroes, shallowEqual);
+    const status = useSelector(state => state.filters.status, shallowEqual)
     const dispatch = useDispatch();
     const {request} = useHttp();
-
+    
     useEffect(() => {
         dispatch(heroesFetching());
         request("http://localhost:3001/heroes")
@@ -26,11 +27,11 @@ const HeroesList = () => {
         // eslint-disable-next-line
     }, []);
 
-    const onDeleteHero = (id) => {
+    const onDeleteHero = useCallback((id) => {
         dispatch(heroesDeleteHero(id));
         request(`http://localhost:3001/heroes/${id}`, 'DELETE');
 
-    }
+    }, [request])
 
     if (heroesLoadingStatus === "loading") {
         return <Spinner/>;
@@ -50,7 +51,7 @@ const HeroesList = () => {
         })
     }
 
-    const elements = renderHeroesList(heroes);
+    const elements = renderHeroesList(entities);
     return (
         <ul>
             {elements}

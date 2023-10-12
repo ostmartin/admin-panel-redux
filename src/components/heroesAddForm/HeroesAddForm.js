@@ -1,19 +1,20 @@
 import { Formik, Form } from 'formik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { heroesAddNewHero } from '../../actions';
 import { useHttp } from '../../hooks/http.hook';
 
 import CustomField from './CustomField';
 import CustomSelect from './CustomSelect';
+import { useCallback } from 'react';
 
 const HeroesAddForm = () => {
     const dispatch = useDispatch();
     const { request } = useHttp();
-    const filters = useSelector(state => state.filters.entities);
+    const filters = useSelector(state => state.filters.entities, shallowEqual);
 
-    const onCreateHero = (values, actions) => {
+    const onCreateHero = useCallback((values, actions) => {
         const hero = {
             id: uuidv4(),
             ...values
@@ -23,7 +24,7 @@ const HeroesAddForm = () => {
         request('http://localhost:3001/heroes', 'POST', body)
 
         actions.resetForm();
-    }
+    }, [request])
 
     return (
         <Formik
