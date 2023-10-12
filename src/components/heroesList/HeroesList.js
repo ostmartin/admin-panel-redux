@@ -1,6 +1,8 @@
 import { useHttp } from '../../hooks/http.hook';
 import { useEffect } from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { createSelector } from 'reselect';
 
 import {
     heroesFetching,
@@ -10,14 +12,18 @@ import {
 } from '../../actions';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
-import { useCallback } from 'react';
 
 const HeroesList = () => {
-    const {entities, heroesLoadingStatus } = useSelector(state => state.heroes, shallowEqual);
-    const status = useSelector(state => state.filters.status, shallowEqual)
+    const heroesLoadingStatus = useSelector(state => state.heroes.heroesLoadingStatus);
     const dispatch = useDispatch();
     const {request} = useHttp();
-    
+
+    const filteredHeroes = useSelector(createSelector(
+        state => state.filters.status,
+        state => state.heroes.entities,
+        (filterStatus, heroes) => heroes.filter(hero => (hero.element === filterStatus || filterStatus === 'all'))
+    ))
+
     useEffect(() => {
         dispatch(heroesFetching());
         request("http://localhost:3001/heroes")
@@ -44,14 +50,12 @@ const HeroesList = () => {
             return <h5 className="text-center mt-5">Героев пока нет</h5>
         }
 
-        const filteredHeroes = arr.filter(hero => (hero.element === status || status === 'all'))
-
-        return filteredHeroes.map(({id, ...props}) => {
+        return arr.map(({id, ...props}) => {
             return <HeroesListItem key={id} {...props} onDeleteHero={() => onDeleteHero(id)}/>
         })
     }
 
-    const elements = renderHeroesList(entities);
+    const elements = renderHeroesList(filteredHeroes);
     return (
         <ul>
             {elements}

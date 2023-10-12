@@ -19,9 +19,7 @@ const HeroesFilters = () => {
     }, []);
 
     const onFilterChange = (newStatus) => {
-        if (newStatus !== status) {
-            dispatch(filterChanged(newStatus))
-        }
+        dispatch(filterChanged(newStatus))
     }
 
     const filters = entities.map(filterData => {
