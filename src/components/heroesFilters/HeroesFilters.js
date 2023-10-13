@@ -3,16 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import {
     filterChanged
 } from "./filtersSlice";
-import { fetchFilters } from "../../actions";
-import { useHttp } from '../../hooks/http.hook';
+import { fetchFilters } from "./filtersSlice";
 
 const HeroesFilters = () => {
-    const { status, entities } = useSelector(state => state.filters)
+    const { status, loadingStatus, entities } = useSelector(state => state.filters)
     const dispatch = useDispatch();
-    const { request } = useHttp();
 
     useEffect(() => {
-        dispatch(fetchFilters(request));
+        dispatch(fetchFilters());
 
         // eslint-disable-next-line
     }, []);
@@ -22,6 +20,10 @@ const HeroesFilters = () => {
     }
 
     const filters = entities.map(filterData => {
+        if (loadingStatus === 'error') {
+            return <div>Ошибка загрузки</div>
+        }
+
         const { id, className, filterValue, filter } = filterData;
 
         const modifiedClassName = status === filterValue ? (className + ' active') : className; 

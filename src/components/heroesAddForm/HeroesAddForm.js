@@ -11,7 +11,7 @@ import { useHttp } from '../../hooks/http.hook';
 
 const HeroesAddForm = () => {
     const dispatch = useDispatch();
-    const { request } = useHttp();
+    const request = useHttp();
     const filters = useSelector(state => state.filters.entities);
 
     const onCreateHero = useCallback((values, actions) => {
