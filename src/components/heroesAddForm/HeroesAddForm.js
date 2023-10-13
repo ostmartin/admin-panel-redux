@@ -23,6 +23,7 @@ const HeroesAddForm = () => {
         request('http://localhost:3001/heroes', 'POST', body)
 
         actions.resetForm();
+        // eslint-disable-next-line
     }, [request])
 
     return (

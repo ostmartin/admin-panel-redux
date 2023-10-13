@@ -5,9 +5,7 @@ import { useCallback } from 'react';
 import { createSelector } from 'reselect';
 
 import {
-    heroesFetching,
-    heroesFetched,
-    heroesFetchingError,
+    fetchHeroes,
     heroesDeleteHero
 } from '../../actions';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
@@ -25,10 +23,7 @@ const HeroesList = () => {
     ))
 
     useEffect(() => {
-        dispatch(heroesFetching());
-        request("http://localhost:3001/heroes")
-            .then(data => dispatch(heroesFetched(data)))
-            .catch(() => dispatch(heroesFetchingError()))
+        dispatch(fetchHeroes(request));
 
         // eslint-disable-next-line
     }, []);
@@ -36,7 +31,7 @@ const HeroesList = () => {
     const onDeleteHero = useCallback((id) => {
         dispatch(heroesDeleteHero(id));
         request(`http://localhost:3001/heroes/${id}`, 'DELETE');
-
+        // eslint-disable-next-line
     }, [request])
 
     if (heroesLoadingStatus === "loading") {

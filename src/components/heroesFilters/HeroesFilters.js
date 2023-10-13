@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-    filtersFetched,
+    fetchFilters,
     filterChanged
 } from "../../actions";
 import { useHttp } from '../../hooks/http.hook';
@@ -12,8 +12,7 @@ const HeroesFilters = () => {
     const { request } = useHttp();
 
     useEffect(() => {
-        request("http://localhost:3001/filters")
-            .then(data => dispatch(filtersFetched(data)))
+        dispatch(fetchFilters(request));
 
         // eslint-disable-next-line
     }, []);
