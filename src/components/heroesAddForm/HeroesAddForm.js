@@ -1,11 +1,12 @@
-import { useCallback } from 'react';import { Formik, Form } from 'formik';
+import { useCallback } from 'react';
+import { Formik, Form } from 'formik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CustomField from './CustomField';
 import CustomSelect from './CustomSelect';
-import { heroesAddNewHero } from '../../actions';
+import { heroesAddNewHero } from '../heroesList/heroesSlice';
 import { useHttp } from '../../hooks/http.hook';
 
 const HeroesAddForm = () => {
