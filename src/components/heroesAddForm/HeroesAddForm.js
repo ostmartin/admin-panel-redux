@@ -8,11 +8,15 @@ import CustomField from './CustomField';
 import CustomSelect from './CustomSelect';
 import { heroesAddNewHero } from '../heroesList/heroesSlice';
 import { useHttp } from '../../hooks/http.hook';
+import { selectAll } from '../heroesFilters/filtersSlice';
+import store from '../../store';
 
 const HeroesAddForm = () => {
     const dispatch = useDispatch();
     const request = useHttp();
-    const filters = useSelector(state => state.filters.entities);
+    // const filters = selectAll(store.getState());
+    const filters = useSelector(selectAll);
+    console.log(filters)
 
     const onCreateHero = useCallback((values, actions) => {
         const hero = {

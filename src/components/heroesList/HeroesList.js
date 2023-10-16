@@ -1,8 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
 
-import { heroesDeleteHero, fetchHeroes } from './heroesSlice';
+import { heroesDeleteHero, fetchHeroes, filteredHeroes } from './heroesSlice';
 import { useHttp } from '../../hooks/http.hook';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
@@ -12,11 +11,7 @@ const HeroesList = () => {
     const dispatch = useDispatch();
     const request = useHttp();
 
-    const filteredHeroes = useSelector(createSelector(
-        state => state.filters.status,
-        state => state.heroes.entities,
-        (filterStatus, heroes) => heroes.filter(hero => (hero.element === filterStatus || filterStatus === 'all'))
-    ))
+    const filtered = useSelector(filteredHeroes);
 
     useEffect(() => {
         dispatch(fetchHeroes());
@@ -25,8 +20,8 @@ const HeroesList = () => {
     }, []);
 
     const onDeleteHero = useCallback((id) => {
-        dispatch(heroesDeleteHero(id));
-        request(`http://localhost:3001/heroes/${id}`, 'DELETE');
+        request(`http://localhost:3001/heroes/${id}`, 'DELETE')
+            .then(dispatch(heroesDeleteHero(id)));
         // eslint-disable-next-line
     }, [request])
 
@@ -46,7 +41,7 @@ const HeroesList = () => {
         })
     }
 
-    const elements = renderHeroesList(filteredHeroes);
+    const elements = renderHeroesList(filtered);
     return (
         <ul>
             {elements}

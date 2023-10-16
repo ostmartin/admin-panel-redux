@@ -1,25 +1,15 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-    filterChanged
-} from "./filtersSlice";
-import { fetchFilters } from "./filtersSlice";
+import { fetchFilters, filterChanged, selectAll } from "./filtersSlice";
+import store from '../../store/index';
 
 const HeroesFilters = () => {
-    const { status, loadingStatus, entities } = useSelector(state => state.filters)
+    const filtersEntities = selectAll(store.getState());
+    const status = useSelector(state => state.filters.status);
+    const loadingStatus = useSelector(state => state.filters.loadingStatus);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(fetchFilters());
-
-        // eslint-disable-next-line
-    }, []);
-
-    const onFilterChange = (newStatus) => {
-        dispatch(filterChanged(newStatus))
-    }
-
-    const filters = entities.map(filterData => {
+    const filters = filtersEntities.map(filterData => {
         if (loadingStatus === 'error') {
             return <div>Ошибка загрузки</div>
         }
@@ -37,6 +27,16 @@ const HeroesFilters = () => {
             {filter}
         </button>
     })
+
+    useEffect(() => {
+        dispatch(fetchFilters());
+
+        // eslint-disable-next-line
+    }, []);
+
+    const onFilterChange = (newStatus) => {
+        dispatch(filterChanged(newStatus))
+    }
 
     return (
         <div className="card shadow-lg mt-4">
