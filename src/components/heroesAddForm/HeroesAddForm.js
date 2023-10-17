@@ -2,34 +2,32 @@ import { useCallback } from 'react';
 import { Formik, Form } from 'formik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
+import { useCreateHeroMutation } from '../../api/apiSlice';
 import CustomField from './CustomField';
 import CustomSelect from './CustomSelect';
-import { heroesAddNewHero } from '../heroesList/heroesSlice';
-import { useHttp } from '../../hooks/http.hook';
 import { selectAll } from '../heroesFilters/filtersSlice';
+//eslint-disable-next-line
 import store from '../../store';
 
 const HeroesAddForm = () => {
-    const dispatch = useDispatch();
-    const request = useHttp();
     // const filters = selectAll(store.getState());
     const filters = useSelector(selectAll);
-    console.log(filters)
+
+    const [createHero] = useCreateHeroMutation();
 
     const onCreateHero = useCallback((values, actions) => {
         const hero = {
             id: uuidv4(),
             ...values
         }
-        dispatch(heroesAddNewHero(hero));
-        const body = JSON.stringify(hero)
-        request('http://localhost:3001/heroes', 'POST', body)
+        
+        createHero(hero);
 
         actions.resetForm();
         // eslint-disable-next-line
-    }, [request])
+    }, [])
 
     return (
         <Formik

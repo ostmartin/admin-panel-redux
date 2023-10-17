@@ -17,6 +17,12 @@
       "name": "Морской герой",
       "description": "Как аквамен, но не из DC",
       "element": "water"
+    },
+    {
+      "id": "47a23738-c38e-4b63-a8ea-5a5a8252d574",
+      "name": "Каменный вертила",
+      "description": "Может сломать сервер",
+      "element": "earth"
     }
   ],
   "filters": [

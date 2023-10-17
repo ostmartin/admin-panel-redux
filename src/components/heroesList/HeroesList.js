@@ -1,33 +1,40 @@
-import { useEffect, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import {  useCallback, useMemo } from 'react';
+import {  useSelector } from 'react-redux';
 
-import { heroesDeleteHero, fetchHeroes, filteredHeroes } from './heroesSlice';
-import { useHttp } from '../../hooks/http.hook';
+import { useGetHeroesQuery, useDeleteHeroMutation } from '../../api/apiSlice';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
+
 import Spinner from '../spinner/Spinner';
 
 const HeroesList = () => {
-    const heroesLoadingStatus = useSelector(state => state.heroes.heroesLoadingStatus);
-    const dispatch = useDispatch();
-    const request = useHttp();
+    const filterStatus = useSelector(state => state.filters.status);
+    
+    const {
+        data: heroes = [],
+        isError,
+        isLoading
+    } = useGetHeroesQuery();
 
-    const filtered = useSelector(filteredHeroes);
+    const filteredHeroes = useMemo(() => {
+        const filteredHeroes = heroes.slice();
 
-    useEffect(() => {
-        dispatch(fetchHeroes());
+        if (filterStatus === 'all') {
+            return filteredHeroes;
+        } else {
+            return filteredHeroes.filter(item => item.element === filterStatus);
+        }
+    }, [heroes, filterStatus]);
 
-        // eslint-disable-next-line
-    }, []);
+    const [deleteHero] = useDeleteHeroMutation();
 
     const onDeleteHero = useCallback((id) => {
-        request(`http://localhost:3001/heroes/${id}`, 'DELETE')
-            .then(dispatch(heroesDeleteHero(id)));
+        deleteHero(id);
         // eslint-disable-next-line
-    }, [request])
+    }, [])
 
-    if (heroesLoadingStatus === "loading") {
+    if (isLoading) {
         return <Spinner/>;
-    } else if (heroesLoadingStatus === "error") {
+    } else if (isError) {
         return <h5 className="text-center mt-5">Ошибка загрузки</h5>
     }
 
@@ -41,7 +48,7 @@ const HeroesList = () => {
         })
     }
 
-    const elements = renderHeroesList(filtered);
+    const elements = renderHeroesList(filteredHeroes);
     return (
         <ul>
             {elements}
